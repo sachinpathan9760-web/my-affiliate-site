@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
   // Yahan bhi Step 2 wala NAYA Webhook URL paste karein
-  const GOOGLE_SHEET_URL = "PASTE_YOUR_NEW_WEBHOOK_URL_HERE";
+  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxVSz5z4u8vTsTSr8UeJ_FYB7hyDIjTMmZ3HKuv0wRpOaPGKkbRCpyiOGyzjQFpOxE8mQ/exec";
 
   try {
     const response = await fetch(GOOGLE_SHEET_URL);
