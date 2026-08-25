@@ -1,6 +1,21 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
+// Helper function jo ensure karega ki price ke aage ALWAYS $ sign dikhe
+const formatPrice = (priceStr) => {
+  if (!priceStr) return "$0.00";
+  
+  let cleanPrice = String(priceStr).trim();
+  
+  // Agar pehle se $ symbol hai toh waise hi return karo
+  if (cleanPrice.startsWith("$")) {
+    return cleanPrice;
+  }
+  
+  // Agar pure number hai ya bina $ ke price hai toh prefix me $ lagao
+  return `$${cleanPrice}`;
+};
+
 export default function Home() {
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,7 +66,8 @@ export default function Home() {
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
           {filteredProducts.map((item, index) => {
             const displayTitle = item?.title || 'Featured Product';
-            const displayPrice = item?.price || 'Check Price';
+            const rawPrice = item?.price || '0.00';
+            const displayPrice = formatPrice(rawPrice);
             const displayImage = item?.image || 'https://via.placeholder.com/300x200?text=No+Image';
             const targetUrl = item?.affiliate_url || item?.url || '#';
 
@@ -69,7 +85,9 @@ export default function Home() {
                   <h3 style={{ fontSize: '1.1rem', color: '#1e293b', marginBottom: '8px', lineHeight: '1.4', height: '2.8em', overflow: 'hidden' }}>
                     {displayTitle}
                   </h3>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#2563eb', marginBottom: '14px' }}>{displayPrice}</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#2563eb', marginBottom: '14px' }}>
+                    {displayPrice}
+                  </div>
                 </div>
                 
                 <a 
