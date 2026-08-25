@@ -1,9 +1,12 @@
 export default async function handler(req, res) {
-  // Demo Data Array (Yeh dynamic API fetch karega)
-  const products = [
-    { title: "Sample Book 1", price: "£51.77", url: "http://books.toscrape.com/" },
-    { title: "Sample Book 2", price: "£53.74", url: "http://books.toscrape.com/" }
-  ];
+  // Aapka Google Sheet Webhook URL
+  const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwoPLI-FLw5ebT8MrggVdH1EW1ZRZPz7zoAHEaUs_xXdiErsup6O3Nd2AY2aZV052NE9g/exec";
 
-  res.status(200).json(products);
+  try {
+    const response = await fetch(GOOGLE_SHEET_URL);
+    const data = await response.json();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ error: "Data fetch karne me dikkat aayi" });
+  }
 }
