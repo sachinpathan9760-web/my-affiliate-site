@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -75,13 +76,16 @@ export default function Home() {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'space-between',
+                  justify: 'space-between',
                   border: '1px solid #e2e8f0'
                 }}>
                   <div>
-                    <h3 style={{ fontSize: '1.1rem', color: '#1e293b', marginBottom: '12px', lineHeight: '1.4', height: '2.8em', overflow: 'hidden' }}>
-                      {item.title}
-                    </h3>
+                    {/* Dynamic Detail Page Link Added Here */}
+                    <Link href={`/product/${index}`} style={{ textDecoration: 'none' }}>
+                      <h3 style={{ fontSize: '1.1rem', color: '#1e293b', marginBottom: '12px', lineHeight: '1.4', height: '2.8em', overflow: 'hidden', cursor: 'pointer' }}>
+                        {item.title}
+                      </h3>
+                    </Link>
                     <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: '#2563eb', marginBottom: '16px' }}>
                       {item.price}
                     </div>
