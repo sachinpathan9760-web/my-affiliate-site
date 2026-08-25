@@ -1,15 +1,33 @@
 export default async function handler(req, res) {
-  const GOOGLE_SHEET_URL = "YOUR_APPS_SCRIPT_WEBHOOK_URL_HERE";
+  // Yahan bhi Step 2 wala NAYA Webhook URL paste karein
+  const GOOGLE_SHEET_URL = "PASTE_YOUR_NEW_WEBHOOK_URL_HERE";
 
   try {
-    const response = await fetch(GOOGLE_SHEET_URL, {
-      method: "GET",
-      redirect: "follow" // Google Apps Script redirect handle karne ke liye
-    });
+    const response = await fetch(GOOGLE_SHEET_URL);
+    const textData = await response.text();
     
-    const data = await response.json();
-    res.status(200).json(data);
+    // Check if Google Apps Script returned JSON or HTML error page
+    let data;
+    try {
+      data = JSON.parse(textData);
+    } catch (e) {
+      return res.status(200).json([]);
+    }
+
+    if (!Array.isArray(data)) {
+      return res.status(200).json([]);
+    }
+
+    const cleanedData = data.map((item) => ({
+      title: item.title || "Featured Deal",
+      price: item.price || "Check Price",
+      image: item.image || "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500&q=80",
+      url: item.url || "https://www.amazon.com",
+      affiliate_url: item.affiliate_url || item.url || "https://www.amazon.com"
+    }));
+
+    return res.status(200).json(cleanedData);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch data", details: error.message });
+    return res.status(200).json([]);
   }
 }
