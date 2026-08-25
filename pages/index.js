@@ -10,14 +10,23 @@ export default function Home() {
     fetch('/api/data')
       .then((res) => res.json())
       .then((data) => {
-        setProducts(data);
+        // Safe check to ensure data is an array
+        if (Array.isArray(data)) {
+          setProducts(data);
+        } else {
+          setProducts([]);
+        }
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('Fetch error:', err);
+        setProducts([]);
+        setLoading(false);
+      });
   }, []);
 
   const filteredProducts = products.filter((item) =>
-    item.title ? item.title.toLowerCase().includes(searchTerm.toLowerCase()) : false
+    item && item.title ? String(item.title).toLowerCase().includes(searchTerm.toLowerCase()) : false
   );
 
   return (
@@ -40,34 +49,40 @@ export default function Home() {
         <p style={{ textAlign: 'center', fontSize: '1.2rem', color: '#64748b' }}>Loading latest deals...</p>
       ) : (
         <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '24px' }}>
-          {filteredProducts.map((item, index) => (
-            <div key={index} style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid #e2e8f0' }}>
-              <div>
-                {item.image && (
+          {filteredProducts.map((item, index) => {
+            const displayTitle = item?.title || 'Featured Product';
+            const displayPrice = item?.price || 'Check Price';
+            const displayImage = item?.image || 'https://via.placeholder.com/300x200?text=No+Image';
+            const targetUrl = item?.affiliate_url || item?.url || '#';
+
+            return (
+              <div key={index} style={{ backgroundColor: '#ffffff', borderRadius: '12px', padding: '16px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', border: '1px solid #e2e8f0' }}>
+                <div>
                   <img
-                    src={item.image}
-                    alt={item.title}
+                    src={displayImage}
+                    alt={displayTitle}
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/300x200?text=Image+Unavailable';
+                    }}
                     style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }}
                   />
-                )}
-                <Link href={`/product/${index}`} style={{ textDecoration: 'none' }}>
                   <h3 style={{ fontSize: '1.1rem', color: '#1e293b', marginBottom: '8px', lineHeight: '1.4', height: '2.8em', overflow: 'hidden' }}>
-                    {item.title}
+                    {displayTitle}
                   </h3>
-                </Link>
-                <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#2563eb', marginBottom: '14px' }}>{item.price}</div>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 'bold', color: '#2563eb', marginBottom: '14px' }}>{displayPrice}</div>
+                </div>
+                
+                <a 
+                  href={targetUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  style={{ display: 'block', textAlign: 'center', backgroundColor: '#2563eb', color: '#ffffff', padding: '10px 16px', borderRadius: '6px', fontWeight: '600', textDecoration: 'none' }}
+                >
+                  Grab Deal ➔
+                </a>
               </div>
-              
-              <a 
-                href={item.affiliate_url || item.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                style={{ display: 'block', textAlign: 'center', backgroundColor: '#2563eb', color: '#ffffff', padding: '10px 16px', borderRadius: '6px', fontWeight: '600', textDecoration: 'none' }}
-              >
-                Grab Deal ➔
-              </a>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
